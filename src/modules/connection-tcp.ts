@@ -243,6 +243,9 @@ export class ConnectionTCP {
 
             this._isConnected = false
 
+            this._lineFragment = ''
+            this._unprocessedLines = []
+
             // if (this._connectTimeout) {
             //     clearTimeout(this._connectTimeout)
             //     this._connectTimeout = null
