@@ -25,9 +25,9 @@ const SOCKET_BASE_LISTENER_TYPES = [
 ];
 // "Custom" types of messages from vMix
 const CUSTOM_MESSAGES_TYPES = [
-    'tally',
-    'activators',
-    'version',
+    'tally', // TALLY
+    'activators', // Activators 'ACTS'
+    'version', // vMix version info
     'xml', // XML data
 ];
 // All lower-case listener types
@@ -62,7 +62,7 @@ const NEWLINE_CHAR_BYTE_LENGTH = 2;
 // vMix TCP API docs
 // https://www.vmix.com/help24/TCPAPI.html
 //
-// Internally using NodeJS Net Socket
+// Internally using Node.js Net Socket
 // https://nodejs.org/api/net.html#net_new_net_socket_options
 //
 // With inspiration from: Github Gist: Node.js TCP client / server
@@ -101,7 +101,7 @@ class ConnectionTCP {
         this._reconnectionInterval = null;
         // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
         // protected _connectTimeoutDuration: number = 5000
-        // protected _connectTimeout: NodeJS.Timeout | null = null
+        // protected _connectTimeout: Node.js.Timeout | null = null
         /**
          * Connection state
          */
@@ -130,7 +130,7 @@ class ConnectionTCP {
         // Private/protected methods below
         // ///////////////////////////////
         /**
-         * Set host
+         * Set host of vMix instance
          *
          * @param {string} host
          */
@@ -142,7 +142,7 @@ class ConnectionTCP {
             this._host = host;
         };
         /**
-         * Set port
+         * Set port of vMix instance
          *
          * @param {number} port
          */
@@ -383,7 +383,7 @@ class ConnectionTCP {
          * @returns {Promise}
          */
         this._sendMessageToSocket = async (message) => {
-            this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket', message);
+            this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket:', message);
             // Guard connected
             // if (!this.connected()) {
             // this._debug && console.warn('[node-vmix]', 'Warning! Attempted to send message but socket is not connected', this._socket)
@@ -480,6 +480,8 @@ class ConnectionTCP {
         this._socket.on('close', () => {
             this._debug && console.log('[node-vmix]', 'Socket connection closed');
             this._isConnected = false;
+            this._lineFragment = '';
+            this._unprocessedLines = [];
             // if (this._connectTimeout) {
             //     clearTimeout(this._connectTimeout)
             //     this._connectTimeout = null
@@ -734,6 +736,7 @@ class ConnectionTCP {
     connected() {
         // @ts-ignore - Why is readyState not in ts doctype???
         // return this._socket.readyState === 'open'
+        // console.log('ReadyState=', this._socket.readyState)
         return this._isConnected;
     }
     /**

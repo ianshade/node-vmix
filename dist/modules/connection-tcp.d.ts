@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Socket } from 'net';
 import { vMixApiFunctionCommand } from '../types/api-command';
 /**
@@ -62,13 +61,13 @@ export declare class ConnectionTCP {
         useDataListenersAsFallback?: boolean;
     });
     /**
-     * Set host
+     * Set host of vMix instance
      *
      * @param {string} host
      */
     protected _setHost: (host: string) => void;
     /**
-     * Set port
+     * Set port of vMix instance
      *
      * @param {number} port
      */

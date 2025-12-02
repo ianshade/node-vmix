@@ -4,7 +4,7 @@
  * Applicable to
  * https://www.vmix.com/help24/index.htm?ShortcutFunctionReference.html
  */
-export declare type vMixApiFunctionCommand = {
+export type vMixApiFunctionCommand = {
     Function: string;
     [key: string]: any;
 };

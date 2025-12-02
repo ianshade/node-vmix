@@ -26,7 +26,7 @@ const command_sender_http_1 = __importDefault(require("./modules/command-sender-
 const Connection = connection_tcp_1.default;
 __exportStar(require("./types/api-command"), exports);
 exports.default = {
-    Connection,
+    Connection, // Alias for ConnectionTCP
     ConnectionTCP: // Alias for ConnectionTCP
     connection_tcp_1.default,
     // Legacy classes: 
