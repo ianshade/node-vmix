@@ -3,6 +3,7 @@ import { ConnectionTCP } from "../dist/index"
 interface Handlers {
     connect: () => void
     data: (chunk: string) => void
+    close: () => void
 }
 
 let handlers = {} as Handlers
@@ -101,7 +102,7 @@ describe("connection TCP", function () {
                 "TALLY OK 1200002000000000000000000000000010\r\n"
 
             handlers.data(
-                    xmlMessage1 + tallyMessage1 + tallyMessage2 + xmlMessage2
+                xmlMessage1 + tallyMessage1 + tallyMessage2 + xmlMessage2
             )
 
             expect(mockOnXml).toHaveBeenCalledTimes(2)
@@ -169,6 +170,33 @@ describe("connection TCP", function () {
 
             expect(mockOnXml).toHaveBeenCalledTimes(1)
             expect(mockOnXml).toHaveBeenNthCalledWith(1, xmlString)
+            testee.shutdown()
+        })
+
+        it("should handle reconnection during fragmented message", async () => {
+            const { testee, mockOnXml } = setupTestee()
+
+            const xmlString1 =
+                "<vmix><version>27.0.0.49</version><inputs></inputs></vmix>"
+            const xmlMessage1 = makeXmlMessage(xmlString1)
+
+            const xmlString2 =
+                "<vmix><version>27.0.0.49</version><inputs><input>Color</input></inputs></vmix>"
+            const xmlMessage2 = makeXmlMessage(xmlString2)
+
+            // Send first half of message 1
+            handlers.data(xmlMessage1.slice(0, 23))
+
+            // Simulate disconnect and reconnect
+            handlers.close()
+            handlers.connect()
+
+            // Send complete message 2 after reconnection
+            handlers.data(xmlMessage2)
+
+            // Should only receive message 2 (message 1 fragment should be discarded)
+            expect(mockOnXml).toHaveBeenCalledTimes(1)
+            expect(mockOnXml).toHaveBeenNthCalledWith(1, xmlString2)
             testee.shutdown()
         })
     })

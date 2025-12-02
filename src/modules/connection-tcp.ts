@@ -70,7 +70,7 @@ const NEWLINE_CHAR_BYTE_LENGTH = 2
 // vMix TCP API docs
 // https://www.vmix.com/help24/TCPAPI.html
 //
-// Internally using NodeJS Net Socket
+// Internally using Node.js Net Socket
 // https://nodejs.org/api/net.html#net_new_net_socket_options
 //
 // With inspiration from: Github Gist: Node.js TCP client / server
@@ -104,7 +104,7 @@ export class ConnectionTCP {
 
     // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
     // protected _connectTimeoutDuration: number = 5000
-    // protected _connectTimeout: NodeJS.Timeout | null = null
+    // protected _connectTimeout: Node.js.Timeout | null = null
 
     /**
      * Connection state
@@ -243,6 +243,9 @@ export class ConnectionTCP {
 
             this._isConnected = false
 
+            this._lineFragment = ''
+            this._unprocessedLines = []
+
             // if (this._connectTimeout) {
             //     clearTimeout(this._connectTimeout)
             //     this._connectTimeout = null
@@ -306,7 +309,7 @@ export class ConnectionTCP {
     // ///////////////////////////////
 
     /**
-     * Set host
+     * Set host of vMix instance
      * 
      * @param {string} host
      */
@@ -320,7 +323,7 @@ export class ConnectionTCP {
     }
 
     /**
-     * Set port
+     * Set port of vMix instance
      * 
      * @param {number} port
      */
@@ -358,7 +361,6 @@ export class ConnectionTCP {
      * Process the lines of received data that are complete
      */
     protected _processLines = (): void => {
-
 
         // If less than two lines were found
         // do not process buffer yet - keep whole buffer
@@ -432,8 +434,6 @@ export class ConnectionTCP {
             this._debugBuffer && console.log('[node-vmix]', 'Emitting error message:', firstMessage)
             this._emitMessage(firstMessage)
         } else {
-
-
             const messageTypeLower = messageType.toLowerCase()
 
             this._debugBuffer && console.log('[node-vmix]', 'Handling custom message:', messageType)
@@ -719,7 +719,7 @@ export class ConnectionTCP {
      * @returns {Promise}
      */
     protected _sendMessageToSocket = async (message: string) => {
-        this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket', message)
+        this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket:', message)
 
         // Guard connected
         // if (!this.connected()) {
@@ -912,6 +912,8 @@ export class ConnectionTCP {
     connected(): boolean {
         // @ts-ignore - Why is readyState not in ts doctype???
         // return this._socket.readyState === 'open'
+
+        // console.log('ReadyState=', this._socket.readyState)
 
         return this._isConnected
     }
